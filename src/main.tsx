@@ -28,6 +28,13 @@ if ('serviceWorker' in navigator && !window.crossOriginIsolated) {
   }
 }
 
+// Quando aberto pelo inicializador (executável), avisa que a aba continua aberta;
+// ele se encerra sozinho alguns minutos depois que todas as abas forem fechadas.
+const ping = () => fetch(`${import.meta.env.BASE_URL}__lex/ping`, { cache: 'no-store' }).catch(() => null);
+void ping().then((res) => {
+  if (res?.ok && res.headers.get('Content-Type')?.startsWith('text/plain')) setInterval(ping, 20_000);
+});
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <App />

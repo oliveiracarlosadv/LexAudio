@@ -1,8 +1,7 @@
 name: Deploy (GitHub Pages)
 
+# Versão online opcional. Ative Settings → Pages → Source: GitHub Actions e rode pela aba Actions.
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
 
 permissions:

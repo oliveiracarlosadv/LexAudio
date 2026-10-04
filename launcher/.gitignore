@@ -1,0 +1,5 @@
+# o app web é copiado para cá no momento do build (veja .github/workflows/release.yml)
+dist/*
+!dist/index.html
+*.syso
+out/

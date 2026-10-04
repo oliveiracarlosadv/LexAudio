@@ -1,0 +1,20 @@
+LEX AUDIO — Transforme áudio em texto. Totalmente offline.
+
+COMO USAR
+1. Arraste "Lex Audio.app" para a pasta Aplicativos (opcional).
+2. Dê dois cliques em "Lex Audio".
+3. O app abre no seu navegador padrão (Safari, Chrome, Firefox...).
+4. Na primeira vez, vá em "Modelos" e baixe o modelo "Base" (57 MB).
+   Depois disso, tudo funciona sem internet.
+
+AVISO DO macOS (primeira abertura)
+O app ainda não é assinado por um certificado Apple pago, então o macOS
+vai bloquear a primeira abertura. Para liberar:
+  - Abra Ajustes do Sistema > Privacidade e Segurança, role até o fim e
+    clique em "Abrir Mesmo Assim" ao lado de "Lex Audio".
+  - Ou, no Terminal:  xattr -dr com.apple.quarantine "/Applications/Lex Audio.app"
+Código aberto em https://github.com/oliveiracarlosadv/LexAudio
+
+ENCERRAR
+Basta fechar as abas do Lex Audio. O programa se encerra sozinho
+alguns minutos depois. Seus áudios nunca saem do computador.

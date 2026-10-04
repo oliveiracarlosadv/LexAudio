@@ -5,6 +5,25 @@
 <h1 align="center">Lex Audio</h1>
 <p align="center"><strong>Transforme áudio em texto. Totalmente offline.</strong></p>
 
+## ⬇️ Baixar e usar
+
+| Sistema | Download |
+| --- | --- |
+| **Windows 10/11** | [LexAudio-Windows.zip](https://github.com/oliveiracarlosadv/LexAudio/releases/latest/download/LexAudio-Windows.zip) |
+| **macOS 11+** (Apple Silicon e Intel) | [LexAudio-macOS.zip](https://github.com/oliveiracarlosadv/LexAudio/releases/latest/download/LexAudio-macOS.zip) |
+| **Linux** (x64) | [LexAudio-Linux.tar.gz](https://github.com/oliveiracarlosadv/LexAudio/releases/latest/download/LexAudio-Linux.tar.gz) |
+
+1. Baixe o arquivo do seu sistema e extraia.
+2. Dê dois cliques em **Lex Audio**. O app abre no navegador que você já usa (Chrome, Edge, Firefox ou Safari).
+3. Na primeira vez, baixe um modelo na aba **Modelos**. Depois disso, tudo funciona sem internet.
+
+> Não é preciso instalar nada. O **Lex Audio** é um executável único que traz o app dentro de si e o serve
+> só para o seu computador (`127.0.0.1`). Ele se encerra sozinho quando você fecha as abas.
+> Na primeira abertura, Windows e macOS mostram um aviso por o app ainda não ter assinatura digital paga;
+> o LEIA-ME de cada pacote explica como liberar.
+
+---
+
 Ferramenta profissional de transcrição de áudio com IA local. O reconhecimento de fala roda no próprio
 computador do usuário (Whisper.cpp compilado para WebAssembly): nenhum áudio ou texto é enviado a servidores.
 
@@ -42,6 +61,7 @@ lex-audio/
 │   ├── ARCHITECTURE.md
 │   └── ELECTRON.md                # estratégia do app desktop
 ├── electron/main.cjs              # esqueleto do app Electron
+├── launcher/                      # inicializador "Lex Audio" (Go) para Windows, macOS e Linux
 ├── public/
 │   ├── icons/                     # favicon, ícones PWA e marca (ramo de oliveira)
 │   ├── ffmpeg/                    # núcleo FFmpeg.wasm (copiado no npm install)
@@ -109,10 +129,19 @@ Cross-Origin-Opener-Policy: same-origin
 Cross-Origin-Embedder-Policy: require-corp
 ```
 
-### GitHub Pages
+### Gerar uma nova versão para download
 
-O workflow `.github/workflows/deploy.yml` compila o motor, faz o build com `VITE_BASE=/<repositório>/` e publica.
-No GitHub: **Settings → Pages → Source: GitHub Actions**. Depois, cada push na `main` atualiza o site.
+```bash
+git tag v1.0.1 && git push --tags
+```
+
+O workflow `.github/workflows/release.yml` compila o motor e o app, gera `Lex Audio.exe`, `Lex Audio.app` e o
+executável Linux com o ícone da oliveira e publica tudo em **Releases**.
+
+### GitHub Pages (opcional)
+
+Para ter também uma versão online, ative **Settings → Pages → Source: GitHub Actions** e rode o workflow
+`.github/workflows/deploy.yml` pela aba **Actions**.
 
 ## Privacidade
 

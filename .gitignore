@@ -1,5 +1,5 @@
 node_modules
-dist
+/dist
 dev-dist
 *.local
 .DS_Store

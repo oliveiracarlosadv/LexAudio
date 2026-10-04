@@ -36,6 +36,7 @@ registerRoute(new NavigationRoute(createHandlerBoundToURL('index.html')));
 
 // Demais arquivos da própria origem que não estejam no precache
 registerRoute(
-  ({ url, request }) => url.origin === self.location.origin && request.method === 'GET',
+  // /__lex/ é o canal do inicializador desktop e nunca pode vir do cache
+  ({ url, request }) => url.origin === self.location.origin && request.method === 'GET' && !url.pathname.includes('/__lex/'),
   new CacheFirst({ cacheName: 'lex-runtime', plugins: [isolationPlugin] }),
 );
