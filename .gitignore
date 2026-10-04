@@ -1,0 +1,14 @@
+node_modules
+dist
+dev-dist
+*.local
+.DS_Store
+# gerados no postinstall / build do motor
+public/ffmpeg/*
+!public/ffmpeg/.gitkeep
+wasm/whisper.cpp
+wasm/build
+# o motor compilado pode ser versionado se preferir não exigir Emscripten de quem clona:
+# public/whisper/lex-whisper.js
+# public/whisper/lex-whisper.wasm
+electron/out

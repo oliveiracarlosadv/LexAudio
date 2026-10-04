@@ -1,0 +1,44 @@
+{
+  "name": "lex-audio",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Lex Audio — transcrição de áudio para texto com IA local (Whisper.cpp + WebAssembly). Totalmente offline.",
+  "author": "Carlos Alexandre Albuquerque Oliveira",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "postinstall": "node scripts/copy-ffmpeg-core.mjs",
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc -b --noEmit",
+    "build:whisper": "bash scripts/build-whisper-wasm.sh"
+  },
+  "dependencies": {
+    "@ffmpeg/core": "^0.12.10",
+    "@ffmpeg/ffmpeg": "^0.12.15",
+    "@ffmpeg/util": "^0.12.2",
+    "docx": "^9.1.0",
+    "idb": "^8.0.1",
+    "jszip": "^3.10.1",
+    "lucide-react": "^0.468.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.4",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.17",
+    "typescript": "^5.7.2",
+    "vite": "^5.4.11",
+    "vite-plugin-pwa": "^0.21.1",
+    "workbox-core": "^7.3.0",
+    "workbox-precaching": "^7.3.0",
+    "workbox-routing": "^7.3.0",
+    "workbox-strategies": "^7.3.0"
+  }
+}

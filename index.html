@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="pt-BR" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Lex Audio</title>
+    <meta name="description" content="Transforme áudio em texto. Totalmente offline. Transcrição com IA local (Whisper), sem enviar nada para servidores." />
+    <meta name="theme-color" content="#0a0f11" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png" />
+    <link rel="icon" type="image/png" sizes="64x64" href="/icons/favicon-64.png" />
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+    <script>
+      // Aplica o tema antes da renderização para evitar flash de cor
+      try {
+        var t = localStorage.getItem('lex-theme');
+        var dark = t ? t === 'dark' : !window.matchMedia('(prefers-color-scheme: light)').matches;
+        document.documentElement.classList.toggle('dark', dark);
+      } catch (e) {}
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

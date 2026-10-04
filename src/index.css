@@ -1,0 +1,60 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: light;
+  }
+  .dark {
+    color-scheme: dark;
+  }
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+  body {
+    @apply bg-zinc-50 text-zinc-900 antialiased dark:bg-ink-950 dark:text-zinc-100;
+    font-feature-settings: 'cv11', 'ss01';
+  }
+  ::selection {
+    @apply bg-emerald-500/30;
+  }
+}
+
+@layer components {
+  .card {
+    @apply rounded-2xl border border-zinc-200 bg-white shadow-sm dark:border-white/[0.06] dark:bg-ink-900/80 dark:shadow-none;
+  }
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-3.5 py-2 text-sm font-medium transition
+      focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/60 disabled:pointer-events-none disabled:opacity-40;
+  }
+  .btn-primary {
+    @apply btn bg-emerald-500 text-ink-950 hover:bg-emerald-400 active:bg-emerald-600;
+  }
+  .btn-ghost {
+    @apply btn text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-white/[0.06] dark:hover:text-zinc-100;
+  }
+  .btn-outline {
+    @apply btn border border-zinc-200 text-zinc-700 hover:bg-zinc-50 dark:border-white/10 dark:text-zinc-200 dark:hover:bg-white/[0.04];
+  }
+  .chip {
+    @apply inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium;
+  }
+  .input {
+    @apply rounded-xl border border-zinc-200 bg-white px-3 py-2 text-sm outline-none transition focus:border-emerald-500/60 focus:ring-2 focus:ring-emerald-500/20
+      dark:border-white/10 dark:bg-ink-850;
+  }
+  .olive-mark {
+    -webkit-mask: url('/icons/olive-mark.png') center / contain no-repeat;
+    mask: url('/icons/olive-mark.png') center / contain no-repeat;
+    background: linear-gradient(135deg, #6ee7b7, #10b981 55%, #047857);
+  }
+}
+
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(120 120 120 / 0.3) transparent;
+}
