@@ -48,7 +48,7 @@ export function TranscriptViewer({ title, segments, transcript, live, info, audi
   return (
     <div className="card flex h-full min-h-[420px] flex-col overflow-hidden">
       <div className="flex flex-wrap items-center gap-3 border-b border-zinc-200 px-5 py-4 dark:border-white/[0.06]">
-        <div className="flex min-w-0 flex-1 items-center gap-3">
+        <div className="flex min-w-[240px] flex-1 items-center gap-3">
           <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
             <FileAudio className="h-[18px] w-[18px]" />
           </div>

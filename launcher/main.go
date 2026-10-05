@@ -12,6 +12,7 @@ import (
 	"embed"
 	"errors"
 	"fmt"
+	"io"
 	"io/fs"
 	"log"
 	"mime"
@@ -33,22 +34,39 @@ const (
 	port        = 47821
 	idleTimeout = 5 * time.Minute // encerra sozinho quando nenhuma aba do app está aberta
 	pingPath    = "/__lex/ping"
+	quitPath    = "/__lex/quit"
 	appID       = "lex-audio"
 )
+
+// definida no build: -ldflags "-X main.version=1.2.3"
+var version = "dev"
 
 var lastSeen atomic.Int64
 
 func main() {
 	url := fmt.Sprintf("http://127.0.0.1:%d/", port)
 
-	ln, err := net.Listen("tcp", fmt.Sprintf("127.0.0.1:%d", port))
+	ln, err := listen()
 	if err != nil {
-		// Provavelmente o Lex Audio já está aberto: só mostra a janela de novo.
-		if alreadyRunning(url) {
+		running := runningVersion(url)
+		switch {
+		case running == version:
+			// Esta versão já está aberta: só mostra a janela de novo.
 			openBrowser(url)
 			return
+		case running != "":
+			// Outra versão está aberta: pede para ela sair e assume o lugar.
+			requestQuit(url)
+			for i := 0; i < 20 && err != nil; i++ {
+				time.Sleep(250 * time.Millisecond)
+				ln, err = listen()
+			}
+			if err != nil {
+				log.Fatalf("Feche a versão anterior do Lex Audio e tente de novo: %v", err)
+			}
+		default:
+			log.Fatalf("A porta %d está ocupada por outro programa: %v", port, err)
 		}
-		log.Fatalf("A porta %d está ocupada por outro programa: %v", port, err)
 	}
 
 	site, err := fs.Sub(embedded, "dist")
@@ -63,7 +81,18 @@ func main() {
 	mux.HandleFunc(pingPath, func(w http.ResponseWriter, r *http.Request) {
 		lastSeen.Store(time.Now().UnixNano())
 		w.Header().Set("Cache-Control", "no-store")
-		_, _ = w.Write([]byte(appID))
+		_, _ = w.Write([]byte(appID + " " + version))
+	})
+	mux.HandleFunc(quitPath, func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost {
+			http.Error(w, "use POST", http.StatusMethodNotAllowed)
+			return
+		}
+		_, _ = w.Write([]byte("ok"))
+		go func() {
+			time.Sleep(100 * time.Millisecond)
+			os.Exit(0)
+		}()
 	})
 	mux.Handle("/", spa(site))
 
@@ -121,16 +150,36 @@ func watchdog() {
 	}
 }
 
-func alreadyRunning(url string) bool {
+func listen() (net.Listener, error) {
+	return net.Listen("tcp", fmt.Sprintf("127.0.0.1:%d", port))
+}
+
+// runningVersion devolve a versão do Lex Audio que ocupa a porta ("" se não for o Lex Audio).
+// Versões antigas respondiam só "lex-audio"; nesse caso devolve "antiga".
+func runningVersion(url string) string {
 	client := http.Client{Timeout: 2 * time.Second}
 	res, err := client.Get(strings.TrimSuffix(url, "/") + pingPath)
 	if err != nil {
-		return false
+		return ""
 	}
 	defer res.Body.Close()
-	buf := make([]byte, len(appID))
-	n, _ := res.Body.Read(buf)
-	return string(buf[:n]) == appID
+	body, _ := io.ReadAll(io.LimitReader(res.Body, 128))
+	text := strings.TrimSpace(string(body))
+	if !strings.HasPrefix(text, appID) {
+		return ""
+	}
+	if v := strings.TrimSpace(strings.TrimPrefix(text, appID)); v != "" {
+		return v
+	}
+	return "antiga"
+}
+
+func requestQuit(url string) {
+	client := http.Client{Timeout: 2 * time.Second}
+	res, err := client.Post(strings.TrimSuffix(url, "/")+quitPath, "text/plain", nil)
+	if err == nil {
+		res.Body.Close()
+	}
 }
 
 func openBrowser(url string) {

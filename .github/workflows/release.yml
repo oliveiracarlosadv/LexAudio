@@ -60,7 +60,7 @@ jobs:
             --product-name "Lex Audio" --file-description "Lex Audio" --original-filename "Lex Audio.exe" \
             --product-version "$V" --file-version "$V" --copyright "Carlos Alexandre Albuquerque Oliveira"
           mkdir -p out/win
-          GOOS=windows GOARCH=amd64 CGO_ENABLED=0 go build -trimpath -ldflags "-s -w -H windowsgui" -o "out/win/Lex Audio.exe" .
+          GOOS=windows GOARCH=amd64 CGO_ENABLED=0 go build -trimpath -ldflags "-s -w -H windowsgui -X main.version=${VERSION#v}" -o "out/win/Lex Audio.exe" .
           cp packaging/LEIA-ME-Windows.txt out/win/LEIA-ME.txt
           (cd out/win && zip -r ../../../LexAudio-Windows.zip .)
 
@@ -69,7 +69,7 @@ jobs:
         run: |
           rm -f *.syso
           mkdir -p "out/linux/Lex Audio"
-          GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -trimpath -ldflags "-s -w" -o "out/linux/Lex Audio/Lex Audio" .
+          GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -trimpath -ldflags "-s -w -X main.version=${VERSION#v}" -o "out/linux/Lex Audio/Lex Audio" .
           cp ../public/icons/pwa-512.png "out/linux/Lex Audio/lex-audio.png"
           cp packaging/instalar-atalho.sh "out/linux/Lex Audio/"
           cp packaging/LEIA-ME-Linux.txt "out/linux/Lex Audio/LEIA-ME.txt"
@@ -99,8 +99,8 @@ jobs:
       - name: Lex Audio.app (Apple Silicon + Intel)
         working-directory: launcher
         run: |
-          GOOS=darwin GOARCH=arm64 CGO_ENABLED=0 go build -trimpath -ldflags "-s -w" -o out/lex-arm64 .
-          GOOS=darwin GOARCH=amd64 CGO_ENABLED=0 go build -trimpath -ldflags "-s -w" -o out/lex-amd64 .
+          GOOS=darwin GOARCH=arm64 CGO_ENABLED=0 go build -trimpath -ldflags "-s -w -X main.version=${VERSION#v}" -o out/lex-arm64 .
+          GOOS=darwin GOARCH=amd64 CGO_ENABLED=0 go build -trimpath -ldflags "-s -w -X main.version=${VERSION#v}" -o out/lex-amd64 .
 
           APP="out/mac/Lex Audio.app"
           mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
