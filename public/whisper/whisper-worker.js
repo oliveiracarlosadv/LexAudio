@@ -15,7 +15,9 @@
  *   { type: 'done', code, canceled, language } | { type: 'error', message }
  *   { type: 'log', text }
  */
-const BASE = self.location.href.replace(/[^/]*$/, '');
+// O worker é criado a partir de um Blob (veja engine.ts), então a pasta do motor
+// chega em LEX_BASE; o fallback cobre o carregamento direto pela URL.
+const BASE = self.LEX_BASE || self.location.href.replace(/[^/]*$/, '');
 const ENGINE = BASE + 'lex-whisper.js';
 const MODEL_PATH = '/model.bin';
 

@@ -54,34 +54,52 @@ class WhisperEngine {
     return { ok: true };
   }
 
+  /**
+   * O Chrome não deixa um worker carregado por URL criar os workers das threads
+   * do Emscripten (o carregamento falha sem mensagem). Criando o worker a partir
+   * de um Blob, as threads também nascem de Blob e funcionam.
+   */
+  private async createWorker(): Promise<Worker> {
+    const base = new URL(`${import.meta.env.BASE_URL}whisper/`, window.location.href).href;
+    const res = await fetch(`${base}whisper-worker.js`);
+    if (!res.ok) throw new Error('Arquivos do motor Whisper não encontrados.');
+    const code = `self.LEX_BASE = ${JSON.stringify(base)};\n${await res.text()}`;
+    const url = URL.createObjectURL(new Blob([code], { type: 'text/javascript' }));
+    return new Worker(url, { name: 'lex-whisper' });
+  }
+
   private boot(): Promise<void> {
     if (this.ready) return this.ready;
     this.ready = new Promise<void>((resolve, reject) => {
-      const worker = new Worker(`${import.meta.env.BASE_URL}whisper/whisper-worker.js`, { name: 'lex-whisper' });
-      this.worker = worker;
-      worker.onmessage = (e: MessageEvent<WorkerEvent>) => {
-        const msg = e.data;
-        if (msg.type === 'ready') return resolve();
-        if (msg.type === 'fatal') {
-          reject(new Error(msg.message));
-          this.listener?.({ type: 'error', message: msg.message });
-          this.reset();
-          return;
-        }
-        if (msg.type === 'log') {
-          if (import.meta.env.DEV) console.debug('[whisper]', msg.text);
-          return;
-        }
-        this.listener?.(msg);
-      };
-      worker.onerror = (e) => {
-        const message = e.message || 'Falha ao iniciar o worker do Whisper.';
-        reject(new Error(message));
-        this.listener?.({ type: 'error', message });
-        this.reset();
-      };
+      this.createWorker().then((worker) => this.attach(worker, resolve, reject), reject);
     });
+    this.ready.catch(() => (this.ready = null));
     return this.ready;
+  }
+
+  private attach(worker: Worker, resolve: () => void, reject: (e: Error) => void) {
+    this.worker = worker;
+    worker.onmessage = (e: MessageEvent<WorkerEvent>) => {
+      const msg = e.data;
+      if (msg.type === 'ready') return resolve();
+      if (msg.type === 'fatal') {
+        reject(new Error(msg.message));
+        this.listener?.({ type: 'error', message: msg.message });
+        this.reset();
+        return;
+      }
+      if (msg.type === 'log') {
+        if (import.meta.env.DEV) console.debug('[whisper]', msg.text);
+        return;
+      }
+      this.listener?.(msg);
+    };
+    worker.onerror = (e) => {
+      const message = e.message || 'Falha ao iniciar o worker do Whisper.';
+      reject(new Error(message));
+      this.listener?.({ type: 'error', message });
+      this.reset();
+    };
   }
 
   private reset() {
