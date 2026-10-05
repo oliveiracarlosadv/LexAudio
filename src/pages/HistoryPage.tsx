@@ -4,16 +4,17 @@ import { ExportMenu } from '../components/ExportMenu';
 import { TranscriptViewer } from '../components/TranscriptViewer';
 import { EmptyState, PageHeader } from '../components/ui';
 import { exportMany } from '../lib/export';
-import type { Transcript } from '../lib/types';
+import type { AudioMeta, Transcript } from '../lib/types';
 import { formatDate, formatDuration, languageName, segmentsToText } from '../lib/utils';
 
 interface Props {
   items: Transcript[];
   onDelete: (id: string) => void;
   onClear: () => void;
+  onUpdateMeta: (id: string, meta: AudioMeta) => void;
 }
 
-export function HistoryPage({ items, onDelete, onClear }: Props) {
+export function HistoryPage({ items, onDelete, onClear, onUpdateMeta }: Props) {
   const [query, setQuery] = useState('');
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [checked, setChecked] = useState<Set<string>>(new Set());
@@ -21,7 +22,9 @@ export function HistoryPage({ items, onDelete, onClear }: Props) {
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return items;
-    return items.filter((t) => t.fileName.toLowerCase().includes(q) || segmentsToText(t.segments).toLowerCase().includes(q));
+    return items.filter((t) =>
+      [t.fileName, segmentsToText(t.segments), ...Object.values(t.meta ?? {})].some((v) => String(v).toLowerCase().includes(q)),
+    );
   }, [items, query]);
 
   const selected = items.find((t) => t.id === selectedId) ?? filtered[0];
@@ -101,6 +104,7 @@ export function HistoryPage({ items, onDelete, onClear }: Props) {
                     <p className="mt-0.5 line-clamp-2 text-xs text-zinc-500">{segmentsToText(t.segments) || '—'}</p>
                     <p className="mt-1 text-[11px] text-zinc-400">
                       {formatDate(t.createdAt)} · {formatDuration(t.durationSec)} · {languageName(t.language)}
+                      {t.meta?.senderName && ` · de ${t.meta.senderName}`}
                     </p>
                   </div>
                   <button
@@ -118,7 +122,16 @@ export function HistoryPage({ items, onDelete, onClear }: Props) {
               {filtered.length === 0 && <li className="px-4 py-8 text-center text-sm text-zinc-500">Nada encontrado.</li>}
             </ul>
           </div>
-          {selected && <TranscriptViewer key={selected.id} title={selected.fileName} segments={selected.segments} transcript={selected} />}
+          {selected && (
+            <TranscriptViewer
+              key={selected.id}
+              title={selected.fileName}
+              segments={selected.segments}
+              transcript={selected}
+              audioMeta={selected.meta}
+              onMetaChange={(meta) => onUpdateMeta(selected.id, meta)}
+            />
+          )}
         </div>
       )}
     </div>

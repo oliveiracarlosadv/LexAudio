@@ -1,0 +1,27 @@
+name: CI
+
+# Verifica tipos e build a cada push na main (sem publicar nada).
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - uses: mymindstorm/setup-emsdk@v14
+        with:
+          version: latest
+      - run: npm install
+      - run: npm run build:whisper
+      - run: npm run build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: web
+          path: dist
+          retention-days: 7

@@ -1,3 +1,5 @@
+import type { AudioMeta } from './types';
+
 export const uid = () =>
   typeof crypto.randomUUID === 'function'
     ? crypto.randomUUID()
@@ -38,6 +40,38 @@ export function formatClock(ms: number): string {
 
 export function formatDate(ts: number): string {
   return new Intl.DateTimeFormat('pt-BR', { dateStyle: 'short', timeStyle: 'short' }).format(ts);
+}
+
+/** "2026-10-04T14:30" → "04/10/2026 14:30" */
+export function formatDateTimeLocal(value?: string): string {
+  if (!value) return '';
+  const [date, time = ''] = value.split('T');
+  const [y, m, d] = date.split('-');
+  if (!y || !m || !d) return value;
+  return `${d}/${m}/${y}${time ? ` ${time.slice(0, 5)}` : ''}`;
+}
+
+/** Formata telefones brasileiros; outros formatos (ex.: com +) ficam como digitados. */
+export function formatPhone(value: string): string {
+  const v = value.trim();
+  if (v.startsWith('+')) return v;
+  const digits = v.replace(/\D/g, '');
+  if (digits.length === 11) return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
+  if (digits.length === 10) return `(${digits.slice(0, 2)}) ${digits.slice(2, 6)}-${digits.slice(6)}`;
+  return v;
+}
+
+/** Linhas "Rótulo: valor" só com os campos preenchidos. */
+export function metaLines(meta?: AudioMeta): [string, string][] {
+  if (!meta) return [];
+  const person = (name?: string, phone?: string) => [name?.trim(), phone?.trim()].filter(Boolean).join(' · ');
+  const lines: [string, string][] = [
+    ['Remetente', person(meta.senderName, meta.senderPhone)],
+    ['Destinatário', person(meta.recipientName, meta.recipientPhone)],
+    ['Data de envio', formatDateTimeLocal(meta.sentAt)],
+    ['Data de recebimento', formatDateTimeLocal(meta.receivedAt)],
+  ];
+  return lines.filter(([, v]) => v);
 }
 
 export function baseName(fileName: string): string {

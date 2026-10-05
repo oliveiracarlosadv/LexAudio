@@ -6,7 +6,7 @@ import { TranscriptViewer } from '../components/TranscriptViewer';
 import { EmptyState, ProgressBar, StatusBadge } from '../components/ui';
 import type { Settings } from '../hooks/useSettings';
 import { exportMany, type ExportFormat } from '../lib/export';
-import type { Job } from '../lib/types';
+import type { AudioMeta, Job } from '../lib/types';
 import { formatBytes, formatDuration, LANGUAGES } from '../lib/utils';
 import { MODELS } from '../lib/whisper/models';
 import { ExportMenu } from '../components/ExportMenu';
@@ -20,6 +20,7 @@ interface Props {
     retry: (id: string) => void;
     remove: (id: string) => void;
     clearFinished: () => void;
+    updateMeta: (id: string, meta: AudioMeta) => void;
   };
   settings: Settings;
   updateSettings: (p: Partial<Settings>) => void;
@@ -178,7 +179,9 @@ export function TranscribePage({ queue, settings, updateSettings, installedModel
                   segments={selected.segments}
                   transcript={selected.transcript}
                   live={selected.status === 'decoding' || selected.status === 'transcribing' || selected.status === 'queued'}
-                  meta={{ durationSec: selected.durationSec, language: selected.language }}
+                  info={{ durationSec: selected.durationSec, language: selected.language }}
+                  audioMeta={selected.meta}
+                  onMetaChange={(meta) => queue.updateMeta(selected.id, meta)}
                 />
               )
             ) : null}

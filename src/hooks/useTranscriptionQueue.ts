@@ -2,18 +2,24 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { decodeToPcm16k, SAMPLE_RATE } from '../lib/audio/decode';
 import { CanceledError, engine } from '../lib/whisper/engine';
 import { saveTranscript } from '../lib/storage/history';
-import type { Job, Transcript } from '../lib/types';
+import type { AudioMeta, Job, Transcript } from '../lib/types';
 import { uid } from '../lib/utils';
 import type { Settings } from './useSettings';
 
 const DECODE_SHARE = 12; // % da barra reservado à conversão do áudio
 
-export function useTranscriptionQueue(settings: Settings, onSaved?: (t: Transcript) => void) {
+export function useTranscriptionQueue(
+  settings: Settings,
+  onSaved?: (t: Transcript) => void,
+  onUpdated?: (t: Transcript) => void,
+) {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [activeId, setActiveId] = useState<string | null>(null);
   const settingsRef = useRef(settings);
   const canceled = useRef(new Set<string>());
+  const jobsRef = useRef(jobs);
   settingsRef.current = settings;
+  jobsRef.current = jobs;
 
   const patch = useCallback((id: string, p: Partial<Job> | ((j: Job) => Partial<Job>)) => {
     setJobs((list) => list.map((j) => (j.id === id ? { ...j, ...(typeof p === 'function' ? p(j) : p) } : j)));
@@ -59,6 +65,8 @@ export function useTranscriptionQueue(settings: Settings, onSaved?: (t: Transcri
           segments: result.segments,
           createdAt: Date.now(),
           processingMs: Math.round(performance.now() - started),
+          // dados preenchidos pelo usuário enquanto o áudio era processado
+          meta: jobsRef.current.find((j) => j.id === job.id)?.meta,
         };
         await saveTranscript(transcript);
         patch(job.id, { status: 'done', progress: 100, segments: result.segments, language: transcript.language, transcript });
@@ -100,6 +108,17 @@ export function useTranscriptionQueue(settings: Settings, onSaved?: (t: Transcri
     [jobs, patch],
   );
 
+  const updateMeta = useCallback(
+    (id: string, meta: AudioMeta) => {
+      const job = jobsRef.current.find((j) => j.id === id);
+      if (!job) return;
+      const transcript = job.transcript ? { ...job.transcript, meta } : undefined;
+      patch(id, { meta, transcript });
+      if (transcript) void saveTranscript(transcript).then(() => onUpdated?.(transcript));
+    },
+    [patch, onUpdated],
+  );
+
   const retry = useCallback((id: string) => patch(id, { status: 'queued', progress: 0, segments: [], error: undefined }), [patch]);
   const remove = useCallback((id: string) => setJobs((list) => list.filter((j) => j.id !== id || j.id === activeId)), [activeId]);
   const clearFinished = useCallback(
@@ -107,5 +126,5 @@ export function useTranscriptionQueue(settings: Settings, onSaved?: (t: Transcri
     [activeId],
   );
 
-  return { jobs, activeId, addFiles, cancel, retry, remove, clearFinished };
+  return { jobs, activeId, addFiles, cancel, retry, remove, clearFinished, updateMeta };
 }

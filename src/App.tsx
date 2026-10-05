@@ -4,8 +4,8 @@ import { useModels } from './hooks/useModels';
 import { useSettings } from './hooks/useSettings';
 import { useTheme } from './hooks/useTheme';
 import { useTranscriptionQueue } from './hooks/useTranscriptionQueue';
-import { clearHistory, deleteTranscript, listTranscripts } from './lib/storage/history';
-import type { Transcript } from './lib/types';
+import { clearHistory, deleteTranscript, listTranscripts, saveTranscript } from './lib/storage/history';
+import type { AudioMeta, Transcript } from './lib/types';
 import { isSupportedAudio } from './lib/utils';
 import { engineSupport } from './lib/whisper/engine';
 import { AboutPage } from './pages/AboutPage';
@@ -26,7 +26,8 @@ export default function App() {
   }, []);
 
   const onSaved = useCallback((t: Transcript) => setHistory((h) => [t, ...h]), []);
-  const queue = useTranscriptionQueue(settings, onSaved);
+  const onUpdated = useCallback((t: Transcript) => setHistory((h) => h.map((x) => (x.id === t.id ? t : x))), []);
+  const queue = useTranscriptionQueue(settings, onSaved, onUpdated);
 
   // Arquivos abertos pelo sistema operacional ("Abrir com… Lex Audio") quando instalado como PWA
   useEffect(() => {
@@ -42,6 +43,13 @@ export default function App() {
   const onDelete = async (id: string) => {
     await deleteTranscript(id);
     setHistory((h) => h.filter((t) => t.id !== id));
+  };
+  const onUpdateMeta = async (id: string, meta: AudioMeta) => {
+    const t = history.find((x) => x.id === id);
+    if (!t) return;
+    const updated = { ...t, meta };
+    await saveTranscript(updated);
+    onUpdated(updated);
   };
   const onClear = async () => {
     await clearHistory();
@@ -64,7 +72,7 @@ export default function App() {
               onGoToModels={() => setTab('models')}
             />
           )}
-          {tab === 'history' && <HistoryPage items={history} onDelete={onDelete} onClear={onClear} />}
+          {tab === 'history' && <HistoryPage items={history} onDelete={onDelete} onClear={onClear} onUpdateMeta={onUpdateMeta} />}
           {tab === 'models' && <ModelsPage models={models} settings={settings} updateSettings={update} />}
           {tab === 'about' && <AboutPage />}
         </main>

@@ -1,9 +1,10 @@
 import { Check, Copy, FileAudio, Search } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { exportTranscript, type ExportFormat } from '../lib/export';
-import type { Segment, Transcript } from '../lib/types';
+import type { AudioMeta, Segment, Transcript } from '../lib/types';
 import { formatClock, formatDuration, languageName, segmentsToText } from '../lib/utils';
 import { getModel } from '../lib/whisper/models';
+import { AudioMetaForm } from './AudioMetaForm';
 import { ExportMenu } from './ExportMenu';
 import { Equalizer } from './ui';
 
@@ -12,10 +13,12 @@ interface Props {
   segments: Segment[];
   transcript?: Transcript;
   live?: boolean;
-  meta?: { durationSec?: number; language?: string };
+  info?: { durationSec?: number; language?: string };
+  audioMeta?: AudioMeta;
+  onMetaChange?: (meta: AudioMeta) => void;
 }
 
-export function TranscriptViewer({ title, segments, transcript, live, meta }: Props) {
+export function TranscriptViewer({ title, segments, transcript, live, info, audioMeta, onMetaChange }: Props) {
   const [mode, setMode] = useState<'segments' | 'text'>('segments');
   const [query, setQuery] = useState('');
   const [copied, setCopied] = useState(false);
@@ -37,9 +40,9 @@ export function TranscriptViewer({ title, segments, transcript, live, meta }: Pr
     setTimeout(() => setCopied(false), 1500);
   };
 
-  const onExport = (f: ExportFormat) => transcript && void exportTranscript(transcript, f);
-  const duration = transcript?.durationSec ?? meta?.durationSec;
-  const language = transcript?.language ?? meta?.language;
+  const onExport = (f: ExportFormat) => transcript && void exportTranscript({ ...transcript, meta: audioMeta ?? transcript.meta }, f);
+  const duration = transcript?.durationSec ?? info?.durationSec;
+  const language = transcript?.language ?? info?.language;
   const words = text ? text.split(/\s+/).length : 0;
 
   return (
@@ -82,6 +85,8 @@ export function TranscriptViewer({ title, segments, transcript, live, meta }: Pr
           <ExportMenu onExport={onExport} disabled={!transcript} />
         </div>
       </div>
+
+      {onMetaChange && <AudioMetaForm value={audioMeta} onChange={onMetaChange} />}
 
       {mode === 'segments' && segments.length > 0 && (
         <div className="border-b border-zinc-200 px-5 py-2.5 dark:border-white/[0.06]">

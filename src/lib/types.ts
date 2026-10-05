@@ -6,6 +6,17 @@ export interface Segment {
   text: string;
 }
 
+/** Dados opcionais sobre a origem do áudio (ex.: mensagem de WhatsApp). */
+export interface AudioMeta {
+  senderName?: string;
+  senderPhone?: string;
+  recipientName?: string;
+  recipientPhone?: string;
+  /** data/hora no formato do <input type="datetime-local">: AAAA-MM-DDTHH:mm */
+  sentAt?: string;
+  receivedAt?: string;
+}
+
 export interface Transcript {
   id: string;
   fileName: string;
@@ -16,6 +27,7 @@ export interface Transcript {
   segments: Segment[];
   createdAt: number;
   processingMs: number;
+  meta?: AudioMeta;
 }
 
 export type JobStatus = 'queued' | 'decoding' | 'transcribing' | 'done' | 'error' | 'canceled';
@@ -31,6 +43,7 @@ export interface Job {
   durationSec?: number;
   error?: string;
   transcript?: Transcript;
+  meta?: AudioMeta;
 }
 
 export interface TranscribeOptions {

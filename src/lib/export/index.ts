@@ -1,12 +1,15 @@
 import JSZip from 'jszip';
 import type { Transcript } from '../types';
-import { baseName, downloadBlob, formatDate, formatDuration, formatTimestamp, languageName, segmentsToText } from '../utils';
+import { baseName, downloadBlob, formatDate, formatDuration, formatTimestamp, languageName, metaLines, segmentsToText } from '../utils';
 
 export type ExportFormat = 'txt' | 'srt' | 'docx';
 
 export function toTxt(t: Transcript, withTimestamps = false): string {
-  if (!withTimestamps) return segmentsToText(t.segments) + '\n';
-  return t.segments.map((s) => `[${formatTimestamp(s.start, '.').slice(0, 8)}] ${s.text.trim()}`).join('\n') + '\n';
+  const header = metaLines(t.meta).map(([label, value]) => `${label}: ${value}`);
+  const body = withTimestamps
+    ? t.segments.map((s) => `[${formatTimestamp(s.start, '.').slice(0, 8)}] ${s.text.trim()}`).join('\n')
+    : segmentsToText(t.segments);
+  return (header.length ? `Arquivo: ${t.fileName}\n${header.join('\n')}\n\n` : '') + body + '\n';
 }
 
 export function toSrt(t: Transcript): string {
@@ -36,6 +39,7 @@ export async function toDocx(t: Transcript): Promise<Blob> {
         children: [
           new Paragraph({ heading: HeadingLevel.HEADING_1, children: [new TextRun({ text: 'Transcrição de áudio' })] }),
           meta('Arquivo', t.fileName),
+          ...metaLines(t.meta).map(([label, value]) => meta(label, value)),
           meta('Duração', formatDuration(t.durationSec)),
           meta('Idioma', languageName(t.language)),
           meta('Gerado em', formatDate(t.createdAt)),
