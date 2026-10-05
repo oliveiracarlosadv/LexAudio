@@ -30,10 +30,10 @@ export function useTranscriptionQueue(settings: Settings, onSaved?: (t: Transcri
         const durationSec = pcm.length / SAMPLE_RATE;
         if (canceled.current.has(job.id)) throw new CanceledError();
 
+        patch(job.id, { status: 'transcribing', progress: DECODE_SHARE, durationSec });
         await engine.ensureModel(modelId);
         if (canceled.current.has(job.id)) throw new CanceledError();
 
-        patch(job.id, { status: 'transcribing', progress: DECODE_SHARE, durationSec });
         const result = await engine.transcribe(
           pcm,
           { language, translate, threads },

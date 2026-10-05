@@ -1,7 +1,7 @@
 {
   "name": "lex-audio",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Lex Audio — transcrição de áudio para texto com IA local (Whisper.cpp + WebAssembly). Totalmente offline.",
   "author": "Carlos Alexandre Albuquerque Oliveira",
   "license": "MIT",
