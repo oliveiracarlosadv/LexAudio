@@ -4,7 +4,8 @@ import type { ExportFormat } from '../lib/export';
 
 const FORMATS: { id: ExportFormat; label: string; hint: string }[] = [
   { id: 'txt', label: 'Texto (.txt)', hint: 'Texto corrido' },
-  { id: 'docx', label: 'Word (.docx)', hint: 'Com cabeçalho e marcações de tempo' },
+  { id: 'pdf', label: 'PDF (.pdf)', hint: 'Cabeçalho dos interlocutores, pronto para anexar' },
+  { id: 'docx', label: 'Word (.docx)', hint: 'Cabeçalho dos interlocutores, editável' },
   { id: 'srt', label: 'Legendas (.srt)', hint: 'Para vídeos e players' },
 ];
 

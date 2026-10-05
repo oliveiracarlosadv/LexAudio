@@ -1,8 +1,12 @@
 import JSZip from 'jszip';
 import type { Transcript } from '../types';
-import { baseName, downloadBlob, formatDate, formatDuration, formatTimestamp, languageName, metaLines, segmentsToText } from '../utils';
+import { baseName, downloadBlob, formatTimestamp, metaLines, segmentsToText } from '../utils';
+import { toDocx } from './docx';
+import { toPdf } from './pdf';
 
-export type ExportFormat = 'txt' | 'srt' | 'docx';
+export { toDocx, toPdf };
+
+export type ExportFormat = 'txt' | 'srt' | 'docx' | 'pdf';
 
 export function toTxt(t: Transcript, withTimestamps = false): string {
   const header = metaLines(t.meta).map(([label, value]) => `${label}: ${value}`);
@@ -19,53 +23,6 @@ export function toSrt(t: Transcript): string {
     .join('\n');
 }
 
-export async function toDocx(t: Transcript): Promise<Blob> {
-  const { Document, Packer, Paragraph, TextRun, HeadingLevel, BorderStyle } = await import('docx');
-  const meta = (label: string, value: string) =>
-    new Paragraph({
-      spacing: { after: 40 },
-      children: [
-        new TextRun({ text: `${label}: `, bold: true, color: '555555', size: 18 }),
-        new TextRun({ text: value, color: '555555', size: 18 }),
-      ],
-    });
-
-  const doc = new Document({
-    creator: 'Lex Audio',
-    title: `Transcrição — ${t.fileName}`,
-    styles: { default: { document: { run: { font: 'Calibri', size: 22 } } } },
-    sections: [
-      {
-        children: [
-          new Paragraph({ heading: HeadingLevel.HEADING_1, children: [new TextRun({ text: 'Transcrição de áudio' })] }),
-          meta('Arquivo', t.fileName),
-          ...metaLines(t.meta).map(([label, value]) => meta(label, value)),
-          meta('Duração', formatDuration(t.durationSec)),
-          meta('Idioma', languageName(t.language)),
-          meta('Gerado em', formatDate(t.createdAt)),
-          new Paragraph({
-            spacing: { after: 240 },
-            border: { bottom: { style: BorderStyle.SINGLE, size: 6, color: '10B981', space: 8 } },
-            children: [new TextRun({ text: 'Processado localmente pelo Lex Audio — nenhum dado foi enviado a servidores.', italics: true, color: '888888', size: 16 })],
-          }),
-          ...t.segments
-            .filter((s) => s.text.trim())
-            .map(
-              (s) =>
-                new Paragraph({
-                  spacing: { after: 120 },
-                  children: [
-                    new TextRun({ text: `[${formatTimestamp(s.start, '.').slice(0, 8)}]  `, color: '10B981', size: 18, font: 'Consolas' }),
-                    new TextRun({ text: s.text.trim() }),
-                  ],
-                }),
-            ),
-        ],
-      },
-    ],
-  });
-  return Packer.toBlob(doc);
-}
 
 export async function buildExport(t: Transcript, format: ExportFormat): Promise<{ blob: Blob; name: string }> {
   const name = `${baseName(t.fileName)}.${format}`;
@@ -76,6 +33,8 @@ export async function buildExport(t: Transcript, format: ExportFormat): Promise<
       return { blob: new Blob([toSrt(t)], { type: 'application/x-subrip;charset=utf-8' }), name };
     case 'docx':
       return { blob: await toDocx(t), name };
+    case 'pdf':
+      return { blob: await toPdf(t), name };
   }
 }
 
