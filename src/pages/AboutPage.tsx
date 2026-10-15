@@ -1,5 +1,8 @@
-import { Award, BookOpen, Briefcase, ExternalLink, GraduationCap, Lock, Scale, ShieldCheck, WifiOff, Zap } from 'lucide-react';
-import type { ReactNode } from 'react';
+import { Award, BookOpen, Briefcase, ExternalLink, FileText, GraduationCap, Lock, Scale, ShieldCheck, WifiOff, Zap } from 'lucide-react';
+import { useState, type ReactNode } from 'react';
+import termos from '../../docs/TERMOS.md?raw';
+import privacidade from '../../docs/PRIVACIDADE.md?raw';
+import { Markdown } from '../components/Markdown';
 import { OliveMark } from '../components/Logo';
 
 const FORMACAO = [
@@ -123,6 +126,8 @@ export function AboutPage() {
         </ul>
       </section>
 
+      <LegalDocs />
+
       <section className="card p-6">
         <p className="flex items-center gap-2 text-sm font-semibold">
           <Scale className="h-4 w-4 text-emerald-500" /> Tecnologia
@@ -137,6 +142,34 @@ export function AboutPage() {
         </p>
       </section>
     </div>
+  );
+}
+
+function LegalDocs() {
+  const [open, setOpen] = useState<'termos' | 'privacidade' | null>(null);
+  const docs = { termos: { label: 'Termos de Uso', text: termos }, privacidade: { label: 'Política de Privacidade', text: privacidade } };
+  return (
+    <section className="card p-6">
+      <p className="flex items-center gap-2 text-sm font-semibold">
+        <FileText className="h-4 w-4 text-emerald-500" /> Termos de Uso e Privacidade
+      </p>
+      <p className="mt-2 text-sm text-zinc-500">
+        Ao usar o Lex Audio você concorda com os Termos de Uso. A transcrição é automática e pode conter erros: confira sempre
+        com o áudio original antes de usá-la em processos.
+      </p>
+      <div className="mt-4 flex flex-wrap gap-2">
+        {(Object.keys(docs) as (keyof typeof docs)[]).map((k) => (
+          <button key={k} className={open === k ? 'btn-primary' : 'btn-outline'} onClick={() => setOpen(open === k ? null : k)}>
+            {docs[k].label}
+          </button>
+        ))}
+      </div>
+      {open && (
+        <div className="scrollbar-thin mt-5 max-h-[60vh] animate-fade-in overflow-y-auto rounded-xl border border-zinc-200 p-5 dark:border-white/[0.06]">
+          <Markdown source={docs[open].text} />
+        </div>
+      )}
+    </section>
   );
 }
 

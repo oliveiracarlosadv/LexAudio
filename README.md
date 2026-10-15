@@ -150,6 +150,14 @@ Para ter também uma versão online, ative **Settings → Pages → Source: GitH
   Em ambientes isolados, importe o `.bin` manualmente.
 - O histórico guarda só o texto e metadados; o áudio nunca é armazenado.
 
+## Documentação
+
+- [Manual do usuário](docs/MANUAL.md)
+- [Termos de Uso](docs/TERMOS.md)
+- [Política de Privacidade](docs/PRIVACIDADE.md)
+- [Histórico de versões](CHANGELOG.md)
+- [Arquitetura](docs/ARCHITECTURE.md)
+
 ## Desktop (Electron)
 
 Veja [docs/ELECTRON.md](docs/ELECTRON.md).

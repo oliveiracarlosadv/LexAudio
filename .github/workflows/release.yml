@@ -62,6 +62,7 @@ jobs:
           mkdir -p out/win
           GOOS=windows GOARCH=amd64 CGO_ENABLED=0 go build -trimpath -ldflags "-s -w -H windowsgui -X main.version=${VERSION#v}" -o "out/win/Lex Audio.exe" .
           cp packaging/LEIA-ME-Windows.txt out/win/LEIA-ME.txt
+          cp ../docs/TERMOS.md ../docs/PRIVACIDADE.md ../docs/MANUAL.md out/win/
           (cd out/win && zip -r ../../../LexAudio-Windows.zip .)
 
       - name: Linux
@@ -73,6 +74,7 @@ jobs:
           cp ../public/icons/pwa-512.png "out/linux/Lex Audio/lex-audio.png"
           cp packaging/instalar-atalho.sh "out/linux/Lex Audio/"
           cp packaging/LEIA-ME-Linux.txt "out/linux/Lex Audio/LEIA-ME.txt"
+          cp ../docs/TERMOS.md ../docs/PRIVACIDADE.md ../docs/MANUAL.md "out/linux/Lex Audio/"
           tar -czf ../LexAudio-Linux.tar.gz -C out/linux "Lex Audio"
 
       - uses: actions/upload-artifact@v4
@@ -118,6 +120,7 @@ jobs:
 
           codesign --force --deep --sign - "$APP"
           cp packaging/LEIA-ME-macOS.txt out/mac/LEIA-ME.txt
+          cp ../docs/TERMOS.md ../docs/PRIVACIDADE.md ../docs/MANUAL.md out/mac/
           (cd out/mac && ditto -c -k --sequesterRsrc . ../../../LexAudio-macOS.zip)
 
       - uses: actions/upload-artifact@v4
