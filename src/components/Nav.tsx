@@ -1,13 +1,14 @@
-import { AudioLines, Cpu, History, Info, Moon, ShieldCheck, Sun } from 'lucide-react';
+import { AudioLines, Cpu, History, Info, Moon, ShieldCheck, Sun, UserRound } from 'lucide-react';
 import type { Theme } from '../hooks/useTheme';
 import { Logo } from './Logo';
 
-export type Tab = 'transcribe' | 'history' | 'models' | 'about';
+export type Tab = 'transcribe' | 'history' | 'models' | 'profile' | 'about';
 
 const ITEMS: { id: Tab; label: string; icon: typeof AudioLines }[] = [
   { id: 'transcribe', label: 'Transcrever', icon: AudioLines },
   { id: 'history', label: 'Histórico', icon: History },
   { id: 'models', label: 'Modelos', icon: Cpu },
+  { id: 'profile', label: 'Perfil', icon: UserRound },
   { id: 'about', label: 'Sobre', icon: Info },
 ];
 
@@ -76,17 +77,17 @@ export function MobileHeader({ theme, onToggleTheme }: Pick<Props, 'theme' | 'on
 
 export function MobileTabs({ tab, onTab }: Pick<Props, 'tab' | 'onTab'>) {
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-20 grid grid-cols-4 border-t border-zinc-200 bg-white/90 pb-[env(safe-area-inset-bottom)] backdrop-blur md:hidden dark:border-white/[0.06] dark:bg-ink-900/90">
+    <nav className="fixed inset-x-0 bottom-0 z-20 grid grid-cols-5 border-t border-zinc-200 bg-white/90 pb-[env(safe-area-inset-bottom)] backdrop-blur md:hidden dark:border-white/[0.06] dark:bg-ink-900/90">
       {ITEMS.map(({ id, label, icon: Icon }) => (
         <button
           key={id}
           onClick={() => onTab(id)}
-          className={`flex flex-col items-center gap-1 py-2.5 text-[11px] font-medium ${
+          className={`flex min-w-0 flex-col items-center gap-1 px-0.5 py-2.5 text-[10px] font-medium ${
             tab === id ? 'text-emerald-600 dark:text-emerald-400' : 'text-zinc-500'
           }`}
         >
           <Icon className="h-5 w-5" />
-          {label}
+          <span className="max-w-full truncate">{label}</span>
         </button>
       ))}
     </nav>

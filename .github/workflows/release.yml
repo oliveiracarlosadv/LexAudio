@@ -1,7 +1,8 @@
 name: Release (Windows, macOS, Linux)
 
-# Gera os pacotes "baixar e dar dois cliques" e publica em Releases.
-# Dispare criando uma tag (git tag v1.0.0 && git push --tags) ou pela aba Actions.
+# Gera os instaladores (assistente Avançar → Concluir) e os pacotes portáteis.
+# Com uma tag (git tag vX.Y.Z && git push origin vX.Y.Z) publica em Releases.
+# Pela aba Actions (workflow_dispatch) só gera os arquivos, para teste, sem publicar.
 on:
   push:
     tags: ['v*']
@@ -64,6 +65,8 @@ jobs:
           cp packaging/LEIA-ME-Windows.txt out/win/LEIA-ME.txt
           cp ../docs/TERMOS.md ../docs/PRIVACIDADE.md ../docs/MANUAL.md out/win/
           (cd out/win && zip -r ../../../LexAudio-Windows.zip .)
+          # termos em .txt com BOM UTF-8 para a tela de licença do instalador
+          printf '\xEF\xBB\xBF' > out/win/TERMOS.txt && cat ../docs/TERMOS.md >> out/win/TERMOS.txt
 
       - name: Linux
         working-directory: launcher
@@ -77,12 +80,68 @@ jobs:
           cp ../docs/TERMOS.md ../docs/PRIVACIDADE.md ../docs/MANUAL.md "out/linux/Lex Audio/"
           tar -czf ../LexAudio-Linux.tar.gz -C out/linux "Lex Audio"
 
+      - name: Linux (.deb — dois cliques abre a Central de Programas)
+        working-directory: launcher
+        run: |
+          V="${VERSION#v}"
+          D=out/deb
+          mkdir -p $D/DEBIAN $D/opt/lex-audio $D/usr/share/applications $D/usr/share/icons/hicolor/512x512/apps $D/usr/bin
+          cp "out/linux/Lex Audio/Lex Audio" $D/opt/lex-audio/lex-audio
+          cp ../docs/TERMOS.md ../docs/PRIVACIDADE.md ../docs/MANUAL.md $D/opt/lex-audio/
+          cp packaging/linux/lex-audio.desktop $D/usr/share/applications/
+          cp ../public/icons/pwa-512.png $D/usr/share/icons/hicolor/512x512/apps/lex-audio.png
+          ln -s /opt/lex-audio/lex-audio $D/usr/bin/lex-audio
+          sed "s/__VERSION__/$V/" packaging/linux/control > $D/DEBIAN/control
+          chmod 755 $D/opt/lex-audio/lex-audio
+          dpkg-deb --root-owner-group --build $D ../LexAudio-Linux.deb
+
       - uses: actions/upload-artifact@v4
         with:
           name: pkg-windows-linux
           path: |
             LexAudio-Windows.zip
             LexAudio-Linux.tar.gz
+            LexAudio-Linux.deb
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: win-files
+          path: launcher/out/win
+
+  windows-installer:
+    needs: windows-linux
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/download-artifact@v4
+        with:
+          name: win-files
+          path: launcher/out/win
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Imagens do assistente (BMP) e ícone (ICO)
+        working-directory: launcher/packaging/windows
+        run: |
+          pip install --quiet pillow
+          python -c "from PIL import Image; Image.open('wizard.png').convert('RGB').resize((164,314), Image.LANCZOS).save('wizard.bmp'); Image.open('wizard-small.png').convert('RGB').resize((55,55), Image.LANCZOS).save('wizard-small.bmp'); Image.open('../../../public/icons/pwa-512.png').save('lexaudio.ico', sizes=[(16,16),(24,24),(32,32),(48,48),(64,64),(128,128),(256,256)])"
+
+      - name: Instalador (Inno Setup)
+        working-directory: launcher/packaging/windows
+        shell: pwsh
+        run: |
+          $iscc = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
+          if (-not (Test-Path $iscc)) { choco install innosetup -y --no-progress | Out-Null }
+          $v = "$env:VERSION".TrimStart('v')
+          & $iscc "/DAppVersion=$v" "/DSourceDir=..\..\out\win" LexAudio.iss
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          Move-Item ..\..\out\LexAudio-Windows-Instalador.exe ..\..\..\LexAudio-Windows-Instalador.exe
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pkg-windows-installer
+          path: LexAudio-Windows-Instalador.exe
 
   macos:
     needs: web
@@ -123,13 +182,33 @@ jobs:
           cp ../docs/TERMOS.md ../docs/PRIVACIDADE.md ../docs/MANUAL.md out/mac/
           (cd out/mac && ditto -c -k --sequesterRsrc . ../../../LexAudio-macOS.zip)
 
+      - name: Instalador .pkg (Continuar → Instalar → abre o app)
+        working-directory: launcher
+        run: |
+          V="${VERSION#v}"
+          mkdir -p out/pkgroot out/scripts out/res
+          ditto "out/mac/Lex Audio.app" "out/pkgroot/Lex Audio.app"
+          pkgbuild --analyze --root out/pkgroot out/component.plist
+          plutil -replace 0.BundleIsRelocatable -bool NO out/component.plist
+          cp packaging/macos/postinstall out/scripts/postinstall && chmod +x out/scripts/postinstall
+          pkgbuild --root out/pkgroot --component-plist out/component.plist --identifier br.adv.caao.lexaudio \
+            --version "$V" --install-location /Applications --scripts out/scripts out/LexAudio-app.pkg
+          cp packaging/macos/resources/* out/res/
+          sed -i '' "s/__VERSION__/$V/g" out/res/welcome.html
+          cp ../docs/TERMOS.md out/res/license.txt
+          sed "s/__VERSION__/$V/g" packaging/macos/distribution.xml > out/distribution.xml
+          productbuild --distribution out/distribution.xml --resources out/res --package-path out ../LexAudio-macOS-Instalador.pkg
+
       - uses: actions/upload-artifact@v4
         with:
           name: pkg-macos
-          path: LexAudio-macOS.zip
+          path: |
+            LexAudio-macOS.zip
+            LexAudio-macOS-Instalador.pkg
 
   release:
-    needs: [windows-linux, macos]
+    if: github.ref_type == 'tag'
+    needs: [windows-linux, windows-installer, macos]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/download-artifact@v4
@@ -143,19 +222,28 @@ jobs:
           target_commitish: ${{ github.sha }}
           make_latest: true
           files: |
+            LexAudio-Windows-Instalador.exe
+            LexAudio-macOS-Instalador.pkg
+            LexAudio-Linux.deb
             LexAudio-Windows.zip
             LexAudio-macOS.zip
             LexAudio-Linux.tar.gz
           body: |
             ## Transforme áudio em texto. Totalmente offline.
 
-            Baixe o arquivo do seu sistema, extraia e dê dois cliques no **Lex Audio**. O app abre no seu navegador.
-
-            | Sistema | Download |
+            ### Instalar (recomendado): Avançar → Avançar → Concluir
+            | Sistema | Baixe e dê dois cliques |
             | --- | --- |
-            | Windows 10/11 | **LexAudio-Windows.zip** → `Lex Audio.exe` |
-            | macOS 11+ (Apple Silicon e Intel) | **LexAudio-macOS.zip** → `Lex Audio.app` |
-            | Linux (x64) | **LexAudio-Linux.tar.gz** → `Lex Audio` |
+            | Windows 10/11 | **LexAudio-Windows-Instalador.exe** |
+            | macOS 11+ (Apple Silicon e Intel) | **LexAudio-macOS-Instalador.pkg** |
+            | Linux (Ubuntu, Debian, Mint) | **LexAudio-Linux.deb** |
 
-            Na primeira abertura, baixe um modelo na aba **Modelos**. Depois disso, tudo funciona sem internet.
-            Na primeira vez, o Windows e o macOS mostram um aviso de segurança porque o app ainda não tem assinatura digital paga. O LEIA-ME de cada pacote explica como liberar.
+            Ao final, o Lex Audio abre sozinho e um assistente ajuda a baixar o modelo de IA (uma única vez).
+            Depois disso, tudo funciona sem internet.
+
+            **Aviso de segurança na primeira vez:** o programa ainda não tem assinatura digital paga.
+            - *Windows:* "O Windows protegeu o computador" → **Mais informações** → **Executar assim mesmo**.
+            - *macOS:* se o instalador for bloqueado, abra **Ajustes do Sistema → Privacidade e Segurança** e clique em **Abrir Mesmo Assim**.
+
+            ### Versão portátil (sem instalar)
+            **LexAudio-Windows.zip**, **LexAudio-macOS.zip** e **LexAudio-Linux.tar.gz**: extraia e dê dois cliques em **Lex Audio**.

@@ -1,10 +1,14 @@
 LEX AUDIO — Transforme áudio em texto. Totalmente offline.
 
+Esta é a versão PORTÁTIL (sem instalar). Para instalar com assistente
+(Avançar > Avançar > Concluir), baixe LexAudio-macOS-Instalador.pkg em
+https://github.com/oliveiracarlosadv/LexAudio/releases/latest
+
 COMO USAR
 1. Arraste "Lex Audio.app" para a pasta Aplicativos (opcional).
 2. Dê dois cliques em "Lex Audio".
 3. O app abre no seu navegador padrão (Safari, Chrome, Firefox...).
-4. Na primeira vez, vá em "Modelos" e baixe o modelo "Base" (57 MB).
+4. Na primeira vez, um assistente ajuda a baixar o modelo "Base" (57 MB).
    Depois disso, tudo funciona sem internet.
 
 AVISO DO macOS (primeira abertura)

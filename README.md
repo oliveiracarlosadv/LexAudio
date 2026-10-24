@@ -5,10 +5,26 @@
 <h1 align="center">Lex Audio</h1>
 <p align="center"><strong>Transforme áudio em texto. Totalmente offline.</strong></p>
 
-## ⬇️ Baixar e usar
+## ⬇️ Instalar (Avançar → Avançar → Concluir)
 
-| Sistema | Download |
+| Sistema | Instalador |
 | --- | --- |
+| **Windows 10/11** | [LexAudio-Windows-Instalador.exe](https://github.com/oliveiracarlosadv/LexAudio/releases/latest/download/LexAudio-Windows-Instalador.exe) |
+| **macOS 11+** (Apple Silicon e Intel) | [LexAudio-macOS-Instalador.pkg](https://github.com/oliveiracarlosadv/LexAudio/releases/latest/download/LexAudio-macOS-Instalador.pkg) |
+| **Linux** (Ubuntu, Debian, Mint) | [LexAudio-Linux.deb](https://github.com/oliveiracarlosadv/LexAudio/releases/latest/download/LexAudio-Linux.deb) |
+
+1. Baixe o instalador do seu sistema e dê dois cliques.
+2. Clique em **Avançar** (ou **Continuar**) até o fim. Não pede senha de administrador no Windows.
+3. Ao concluir, o Lex Audio abre sozinho no seu navegador e um assistente de primeiro uso ajuda a aceitar os termos,
+   baixar o modelo de IA (uma única vez) e preencher seu perfil. Depois disso, tudo funciona sem internet.
+
+> Na primeira vez, Windows e macOS mostram um aviso porque o app ainda não tem assinatura digital paga.
+> *Windows:* **Mais informações → Executar assim mesmo**. *macOS:* **Ajustes do Sistema → Privacidade e Segurança → Abrir Mesmo Assim**.
+
+**Versão portátil (sem instalar):** [Windows .zip](https://github.com/oliveiracarlosadv/LexAudio/releases/latest/download/LexAudio-Windows.zip) ·
+[macOS .zip](https://github.com/oliveiracarlosadv/LexAudio/releases/latest/download/LexAudio-macOS.zip) · [Linux .tar.gz](https://github.com/oliveiracarlosadv/LexAudio/releases/latest/download/LexAudio-Linux.tar.gz) — extraia e dê dois cliques em **Lex Audio**.
+
+--- | --- |
 | **Windows 10/11** | [LexAudio-Windows.zip](https://github.com/oliveiracarlosadv/LexAudio/releases/latest/download/LexAudio-Windows.zip) |
 | **macOS 11+** (Apple Silicon e Intel) | [LexAudio-macOS.zip](https://github.com/oliveiracarlosadv/LexAudio/releases/latest/download/LexAudio-macOS.zip) |
 | **Linux** (x64) | [LexAudio-Linux.tar.gz](https://github.com/oliveiracarlosadv/LexAudio/releases/latest/download/LexAudio-Linux.tar.gz) |
@@ -33,7 +49,10 @@ computador do usuário (Whisper.cpp compilado para WebAssembly): nenhum áudio o
 - Áudios do **WhatsApp, Telegram, Signal** e gravadores: OGG, OPUS, MP3, WAV, M4A (e AAC, FLAC, WEBM, AMR)
 - **Detecção automática de idioma** (ou escolha manual) e tradução opcional para inglês
 - Texto aparecendo **ao vivo** durante a transcrição, com busca nos trechos
-- Exportação em **TXT, DOCX e SRT**, individual ou em lote (.zip)
+- **Relatório de transcrição** em **PDF e Word** com timbre do escritório (logo, CNPJ, contatos), hash SHA-256 do áudio,
+  interlocutores, marcações de tempo e bloco de assinatura; também **TXT e SRT**, individual ou em lote (.zip)
+- **Perfil do usuário**: nome, e-mail, telefone, profissão, registro profissional, CPF, escritório, CNPJ e logo
+- **Assistente de primeiro uso** (termos, download do modelo e perfil)
 - **Histórico local** (IndexedDB), com busca por nome e conteúdo
 - Tema **claro e escuro**
 - **PWA instalável**, funcionando 100% offline depois de instalado

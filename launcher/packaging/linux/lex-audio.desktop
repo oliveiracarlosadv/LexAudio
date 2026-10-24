@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Lex Audio
+GenericName=Transcrição de áudio
+Comment=Transforme áudio em texto. Totalmente offline.
+Exec=/opt/lex-audio/lex-audio
+Icon=lex-audio
+Terminal=false
+Categories=AudioVideo;Office;Utility;
+Keywords=transcrição;áudio;whisper;texto;
+StartupNotify=false

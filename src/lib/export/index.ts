@@ -1,7 +1,9 @@
 import JSZip from 'jszip';
+import { loadProfile, type Profile } from '../profile';
 import type { Transcript } from '../types';
 import { baseName, downloadBlob, formatTimestamp, metaLines, segmentsToText } from '../utils';
 import { toDocx } from './docx';
+import { sampleTranscript } from './layout';
 import { toPdf } from './pdf';
 
 export { toDocx, toPdf };
@@ -10,6 +12,7 @@ export type ExportFormat = 'txt' | 'srt' | 'docx' | 'pdf';
 
 export function toTxt(t: Transcript, withTimestamps = false): string {
   const header = metaLines(t.meta).map(([label, value]) => `${label}: ${value}`);
+  if (t.sha256) header.push(`SHA-256 do áudio: ${t.sha256}`);
   const body = withTimestamps
     ? t.segments.map((s) => `[${formatTimestamp(s.start, '.').slice(0, 8)}] ${s.text.trim()}`).join('\n')
     : segmentsToText(t.segments);
@@ -23,8 +26,7 @@ export function toSrt(t: Transcript): string {
     .join('\n');
 }
 
-
-export async function buildExport(t: Transcript, format: ExportFormat): Promise<{ blob: Blob; name: string }> {
+export async function buildExport(t: Transcript, format: ExportFormat, profile: Profile = loadProfile()): Promise<{ blob: Blob; name: string }> {
   const name = `${baseName(t.fileName)}.${format}`;
   switch (format) {
     case 'txt':
@@ -32,9 +34,9 @@ export async function buildExport(t: Transcript, format: ExportFormat): Promise<
     case 'srt':
       return { blob: new Blob([toSrt(t)], { type: 'application/x-subrip;charset=utf-8' }), name };
     case 'docx':
-      return { blob: await toDocx(t), name };
+      return { blob: await toDocx(t, profile), name };
     case 'pdf':
-      return { blob: await toPdf(t), name };
+      return { blob: await toPdf(t, profile), name };
   }
 }
 
@@ -57,4 +59,9 @@ export async function exportMany(list: Transcript[], format: ExportFormat) {
   }
   const stamp = new Date().toISOString().slice(0, 10);
   downloadBlob(await zip.generateAsync({ type: 'blob' }), `lex-audio-${format}-${stamp}.zip`);
+}
+
+/** Relatório de exemplo (dados fictícios) com o perfil informado. */
+export async function exportSample(profile: Profile) {
+  downloadBlob(await toPdf(sampleTranscript(), profile), 'exemplo-relatorio-lex-audio.pdf');
 }

@@ -1,0 +1,9 @@
+#!/bin/sh
+# Abre o Lex Audio para o usuário logado ao final da instalação.
+APP="/Applications/Lex Audio.app"
+USER_NAME=$(stat -f%Su /dev/console)
+if [ -n "$USER_NAME" ] && [ "$USER_NAME" != "root" ] && [ -d "$APP" ]; then
+  USER_ID=$(id -u "$USER_NAME")
+  launchctl asuser "$USER_ID" sudo -u "$USER_NAME" open "$APP" >/dev/null 2>&1 &
+fi
+exit 0

@@ -122,3 +122,13 @@ export function downloadBlob(blob: Blob, fileName: string) {
   a.remove();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
+
+/** SHA-256 de um arquivo, em hexadecimal (vazio se o navegador não permitir). */
+export async function sha256Hex(file: Blob): Promise<string> {
+  try {
+    const buf = await crypto.subtle.digest('SHA-256', await file.arrayBuffer());
+    return Array.from(new Uint8Array(buf), (b) => b.toString(16).padStart(2, '0')).join('');
+  } catch {
+    return '';
+  }
+}

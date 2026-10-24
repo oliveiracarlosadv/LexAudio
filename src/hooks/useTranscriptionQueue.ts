@@ -3,7 +3,7 @@ import { decodeToPcm16k, SAMPLE_RATE } from '../lib/audio/decode';
 import { CanceledError, engine } from '../lib/whisper/engine';
 import { saveTranscript } from '../lib/storage/history';
 import type { AudioMeta, Job, Transcript } from '../lib/types';
-import { uid } from '../lib/utils';
+import { sha256Hex, uid } from '../lib/utils';
 import type { Settings } from './useSettings';
 
 const DECODE_SHARE = 12; // % da barra reservado à conversão do áudio
@@ -32,6 +32,7 @@ export function useTranscriptionQueue(
       const started = performance.now();
       try {
         patch(job.id, { status: 'decoding', progress: 0 });
+        const hash = sha256Hex(job.file);
         const pcm = await decodeToPcm16k(job.file, (p) => patch(job.id, { progress: Math.round(p * DECODE_SHARE) }));
         const durationSec = pcm.length / SAMPLE_RATE;
         if (canceled.current.has(job.id)) throw new CanceledError();
@@ -67,6 +68,7 @@ export function useTranscriptionQueue(
           processingMs: Math.round(performance.now() - started),
           // dados preenchidos pelo usuário enquanto o áudio era processado
           meta: jobsRef.current.find((j) => j.id === job.id)?.meta,
+          sha256: (await hash) || undefined,
         };
         await saveTranscript(transcript);
         patch(job.id, { status: 'done', progress: 100, segments: result.segments, language: transcript.language, transcript });

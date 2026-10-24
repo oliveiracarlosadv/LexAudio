@@ -1,5 +1,6 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { MobileHeader, MobileTabs, Sidebar, type Tab } from './components/Nav';
+import { markSetupDone, setupDone, SetupWizard } from './components/SetupWizard';
 import { useModels } from './hooks/useModels';
 import { useSettings } from './hooks/useSettings';
 import { useTheme } from './hooks/useTheme';
@@ -11,6 +12,7 @@ import { engineSupport } from './lib/whisper/engine';
 import { AboutPage } from './pages/AboutPage';
 import { HistoryPage } from './pages/HistoryPage';
 import { ModelsPage } from './pages/ModelsPage';
+import { ProfilePage } from './pages/ProfilePage';
 import { TranscribePage } from './pages/TranscribePage';
 
 export default function App() {
@@ -20,6 +22,18 @@ export default function App() {
   const [tab, setTab] = useState<Tab>('transcribe');
   const [history, setHistory] = useState<Transcript[]>([]);
   const support = useMemo(() => engineSupport(), []);
+  const [wizard, setWizard] = useState(() => !setupDone());
+  const wizardChecked = useRef(false);
+
+  // Quem já usava o app (modelo instalado) não precisa do assistente de primeiro uso.
+  useEffect(() => {
+    if (models.loading || wizardChecked.current) return;
+    wizardChecked.current = true;
+    if (wizard && models.installed.length > 0) {
+      markSetupDone();
+      setWizard(false);
+    }
+  }, [models.loading]);
 
   useEffect(() => {
     void listTranscripts().then(setHistory);
@@ -74,10 +88,21 @@ export default function App() {
           )}
           {tab === 'history' && <HistoryPage items={history} onDelete={onDelete} onClear={onClear} onUpdateMeta={onUpdateMeta} />}
           {tab === 'models' && <ModelsPage models={models} settings={settings} updateSettings={update} />}
+          {tab === 'profile' && <ProfilePage />}
           {tab === 'about' && <AboutPage />}
         </main>
       </div>
       <MobileTabs tab={tab} onTab={setTab} />
+      {wizard && !models.loading && (
+        <SetupWizard
+          models={models}
+          updateSettings={update}
+          onFinish={(goTo) => {
+            setWizard(false);
+            setTab(goTo);
+          }}
+        />
+      )}
     </div>
   );
 }

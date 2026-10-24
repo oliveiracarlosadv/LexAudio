@@ -1,10 +1,14 @@
 LEX AUDIO — Transforme áudio em texto. Totalmente offline.
 
+Esta é a versão PORTÁTIL (sem instalar). Para instalar com assistente
+(Avançar > Avançar > Concluir), baixe LexAudio-Linux.deb em
+https://github.com/oliveiracarlosadv/LexAudio/releases/latest
+
 COMO USAR
 1. Extraia o arquivo .tar.gz.
 2. Dê dois cliques em "Lex Audio" (ou rode ./"Lex Audio" no terminal).
 3. Para criar um atalho no menu de aplicativos: ./instalar-atalho.sh
-4. Na primeira vez, vá em "Modelos" e baixe o modelo "Base" (57 MB).
+4. Na primeira vez, um assistente ajuda a baixar o modelo "Base" (57 MB).
    Depois disso, tudo funciona sem internet.
 
 Fechar as abas do Lex Audio encerra o programa alguns minutos depois.

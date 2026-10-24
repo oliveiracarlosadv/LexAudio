@@ -28,6 +28,8 @@ export interface Transcript {
   createdAt: number;
   processingMs: number;
   meta?: AudioMeta;
+  /** SHA-256 do arquivo de áudio original (hexadecimal), para conferência de integridade */
+  sha256?: string;
 }
 
 export type JobStatus = 'queued' | 'decoding' | 'transcribing' | 'done' | 'error' | 'canceled';

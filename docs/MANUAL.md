@@ -4,23 +4,35 @@
 
 ## 1. Instalação
 
-1. Acesse https://github.com/oliveiracarlosadv/LexAudio/releases/latest e baixe o arquivo do seu sistema:
-   - **Windows 10/11:** `LexAudio-Windows.zip`
-   - **macOS 11 ou superior (Apple Silicon e Intel):** `LexAudio-macOS.zip`
-   - **Linux (x64):** `LexAudio-Linux.tar.gz`
-2. Extraia o arquivo.
-3. Dê dois cliques em **Lex Audio**. O aplicativo abre no seu navegador padrão (Chrome, Edge, Firefox ou Safari).
+1. Acesse https://github.com/oliveiracarlosadv/LexAudio/releases/latest e baixe o **instalador** do seu sistema:
+   - **Windows 10/11:** `LexAudio-Windows-Instalador.exe`
+   - **macOS 11 ou superior (Apple Silicon e Intel):** `LexAudio-macOS-Instalador.pkg`
+   - **Linux (Ubuntu, Debian, Mint):** `LexAudio-Linux.deb`
+2. Dê dois cliques no arquivo baixado e clique em **Avançar** (no macOS, **Continuar**) até **Concluir**.
+   - *Windows:* o instalador mostra os Termos de Uso, a pasta de instalação e a opção de atalho na Área de Trabalho.
+     Não pede senha de administrador. Ao final, deixe marcado **Abrir o Lex Audio agora**.
+   - *macOS:* o app é instalado em **Aplicativos** e abre sozinho ao final.
+   - *Linux:* o arquivo abre na Central de Programas; clique em **Instalar**. O Lex Audio aparece no menu de aplicativos.
+3. O Lex Audio abre no seu navegador padrão (Chrome, Edge, Firefox ou Safari) com o **assistente de primeiro uso**:
+   boas-vindas → aceite dos termos → download do modelo de IA → perfil (opcional) → pronto.
 
-**Primeira abertura**
-- *Windows:* se aparecer "O Windows protegeu o computador", clique em **Mais informações → Executar assim mesmo**.
-- *macOS:* abra **Ajustes do Sistema → Privacidade e Segurança**, role até o fim e clique em **Abrir Mesmo Assim**.
-- *Linux:* para criar um atalho no menu, rode `./instalar-atalho.sh` na pasta extraída.
+**Aviso de segurança na primeira vez** (o programa ainda não tem assinatura digital paga):
+- *Windows:* em "O Windows protegeu o computador", clique em **Mais informações → Executar assim mesmo**.
+- *macOS:* se o instalador for bloqueado, abra **Ajustes do Sistema → Privacidade e Segurança**, role até o fim e clique em
+  **Abrir Mesmo Assim**; depois abra o instalador de novo.
+
+**Versão portátil (sem instalar):** os arquivos `LexAudio-Windows.zip`, `LexAudio-macOS.zip` e `LexAudio-Linux.tar.gz`
+continuam disponíveis: extraia e dê dois cliques em **Lex Audio**.
+
+**Desinstalar:** *Windows:* Configurações → Aplicativos → Lex Audio → Desinstalar. *macOS:* arraste **Lex Audio** de
+Aplicativos para o Lixo. *Linux:* `sudo apt remove lex-audio`.
 
 > Atenção: o botão verde **Code → Download ZIP** do GitHub baixa o código-fonte, não o aplicativo.
 
 ## 2. Instalar um modelo de IA (uma única vez)
 
-Na aba **Modelos**, clique em **Baixar** no modelo desejado:
+O assistente de primeiro uso já oferece o download. Para trocar ou adicionar modelos, use a aba **Modelos** e clique em
+**Baixar** no modelo desejado:
 
 | Modelo | Download | Indicado para |
 | --- | --- | --- |
@@ -54,35 +66,59 @@ Abra **Dados do áudio** acima do texto e preencha, se quiser:
 Os telefones são formatados automaticamente, por exemplo `(91) 98888-7777`. As informações podem ser
 preenchidas durante ou depois da transcrição e também pelo Histórico.
 
-## 5. Exportar
+## 5. Perfil
+
+Na aba **Perfil**, preencha os dados que devem aparecer nos relatórios:
+
+- **Dados pessoais:** nome completo, e-mail, telefone, profissão, número de registro profissional (ex.: OAB/PA 12.345),
+  CPF e cidade (usada na data da assinatura).
+- **Escritório:** nome, CNPJ e **logo** (PNG, JPG, WEBP ou SVG; prefira imagem horizontal com fundo branco ou transparente).
+- **Relatório:** ligue ou desligue o cabeçalho com logo e o bloco de assinatura.
+
+CPF e CNPJ são conferidos (dígitos verificadores) e formatados automaticamente. Use **Ver exemplo em PDF** para ver
+como o relatório fica com seus dados. O perfil fica guardado apenas neste computador.
+
+## 6. Exportar
 
 Botão **Exportar**:
 
 | Formato | Conteúdo |
 | --- | --- |
-| **PDF** | Cabeçalho com a tabela dos interlocutores, dados do arquivo e conteúdo transcrito com marcações de tempo. Pronto para anexar. |
-| **Word (.docx)** | O mesmo documento, editável. |
-| **Texto (.txt)** | Texto corrido, com os dados dos interlocutores no início, se preenchidos. |
+| **PDF** | Relatório de transcrição pronto para anexar (detalhes abaixo). |
+| **Word (.docx)** | O mesmo relatório, editável. |
+| **Texto (.txt)** | Texto corrido, com interlocutores e hash SHA-256 no início, se houver. |
 | **Legendas (.srt)** | Para players de vídeo. |
 
-Padrão dos documentos PDF e Word: Arial 12 (no PDF, Helvetica, de métricas idênticas), entrelinhas 1,5,
-3 pt antes e depois de cada parágrafo, margens ABNT (3 cm superior e esquerda, 2 cm inferior e direita).
+**Relatório de transcrição (PDF e Word):**
+
+1. **Cabeçalho** em todas as páginas: logo, nome do escritório, CNPJ, e-mail e telefone (do Perfil).
+2. **Título e número do relatório** (ex.: `LA-1A2B3C4D`) com data e hora de emissão.
+3. **Identificação do arquivo:** nome, formato, tamanho, duração, **hash SHA-256**, idioma, modelo de IA e data da transcrição.
+   O hash identifica o arquivo de áudio de forma única: qualquer alteração no arquivo muda o código.
+4. **Interlocutores:** remetente e destinatário, telefones e datas.
+5. **Conteúdo transcrito** com marcações de tempo.
+6. **Observações** sobre o método (transcrição automática local, necessidade de conferência).
+7. **Assinatura:** cidade e data, nome, profissão, registro e CPF.
+8. **Rodapé:** número do relatório e "Página X de Y".
+
+Padrão: Arial 12 (no PDF, Helvetica, de métricas idênticas), entrelinhas 1,5 no texto, 3 pt antes e depois de cada
+parágrafo, margens ABNT (3 cm superior e esquerda, 2 cm inferior e direita).
 
 Para exportar vários arquivos de uma vez, use **Lote** na fila ou selecione itens no Histórico; o resultado
 vem num arquivo `.zip`.
 
-## 6. Histórico
+## 7. Histórico
 
 Todas as transcrições concluídas ficam na aba **Histórico**, com busca por nome do arquivo, conteúdo,
 interlocutores e telefones. O áudio original **não** é guardado.
 
-## 7. Encerrar e atualizar
+## 8. Encerrar e atualizar
 
 - **Encerrar:** feche as abas do Lex Audio; o programa se encerra sozinho alguns minutos depois.
-- **Atualizar:** baixe a versão nova e abra-a; a versão anterior é fechada automaticamente.
-  Histórico, modelos e preferências são mantidos.
+- **Atualizar:** baixe o instalador da versão nova e instale por cima; a versão anterior é fechada automaticamente.
+  Histórico, modelos, perfil e preferências são mantidos.
 
-## 8. Problemas comuns
+## 9. Problemas comuns
 
 | Sintoma | O que fazer |
 | --- | --- |
@@ -92,7 +128,7 @@ interlocutores e telefones. O áudio original **não** é guardado.
 | Nomes próprios errados | Use o modelo Small ou maior e revise o texto. |
 | O app não abre no macOS | Libere em Ajustes do Sistema → Privacidade e Segurança. |
 
-## 9. Avisos importantes
+## 10. Avisos importantes
 
 A transcrição é automática e pode conter erros; não substitui perícia nem ata notarial. Confira sempre com o
 áudio original antes de usar em processos. Leia os [Termos de Uso](TERMOS.md) e a

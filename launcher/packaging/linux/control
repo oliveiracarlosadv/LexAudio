@@ -1,0 +1,11 @@
+Package: lex-audio
+Version: __VERSION__
+Section: utils
+Priority: optional
+Architecture: amd64
+Maintainer: Carlos Alexandre Albuquerque Oliveira <oliveiracarlosadv@users.noreply.github.com>
+Homepage: https://github.com/oliveiracarlosadv/LexAudio
+Recommends: xdg-utils
+Description: Transforme áudio em texto. Totalmente offline.
+ Transcrição de áudio para texto com inteligência artificial local
+ (Whisper.cpp + WebAssembly). Nenhum dado sai do computador.
