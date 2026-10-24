@@ -16,6 +16,14 @@
 3. O Lex Audio abre no seu navegador padrão (Chrome, Edge, Firefox ou Safari) com o **assistente de primeiro uso**:
    boas-vindas → aceite dos termos → download do modelo de IA → perfil (opcional) → pronto.
 
+**Ícone fixo na barra:**
+- *macOS:* na primeira abertura, o ícone do Lex Audio é colocado no **Dock** automaticamente.
+- *Linux (Ubuntu e similares):* na primeira abertura, o ícone vai para os **Favoritos** da barra.
+- *Windows:* o Windows não permite que programas se fixem sozinhos. Abra o menu **Iniciar**, clique com o botão direito em
+  **Lex Audio** e escolha **Fixar na barra de tarefas** (no Windows 11: **Mais → Fixar na barra de tarefas**).
+
+Se você tirar o ícone da barra, ele não volta sozinho.
+
 **Aviso de segurança na primeira vez** (o programa ainda não tem assinatura digital paga):
 - *Windows:* em "O Windows protegeu o computador", clique em **Mais informações → Executar assim mesmo**.
 - *macOS:* se o instalador for bloqueado, abra **Ajustes do Sistema → Privacidade e Segurança**, role até o fim e clique em

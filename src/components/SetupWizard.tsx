@@ -1,4 +1,4 @@
-import { ArrowLeft, ArrowRight, Check, CloudDownload, Loader2, Lock, PartyPopper, WifiOff, Zap } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Check, CloudDownload, Loader2, Lock, PartyPopper, Pin, WifiOff, Zap } from 'lucide-react';
 import { useState, type ReactNode } from 'react';
 import termos from '../../docs/TERMOS.md?raw';
 import privacidade from '../../docs/PRIVACIDADE.md?raw';
@@ -209,6 +209,7 @@ export function SetupWizard({ models, updateSettings, onFinish }: Props) {
                 Arraste um áudio para a tela Transcrever e o texto aparece em instantes.
                 {dl && !installed && ' O modelo ainda está sendo baixado; a transcrição começa assim que terminar.'}
               </p>
+              <PinTip />
             </div>
           )}
         </div>
@@ -245,6 +246,22 @@ export function SetupWizard({ models, updateSettings, onFinish }: Props) {
         </div>
       </div>
     </div>
+  );
+}
+
+/** Dica para deixar o ícone do Lex Audio fixo na barra do sistema (só no programa instalado). */
+function PinTip() {
+  if (location.port !== '47821') return null;
+  const ua = navigator.userAgent;
+  const text = /Windows/.test(ua)
+    ? 'Para fixar o ícone na barra de tarefas: abra o menu Iniciar, clique com o botão direito em Lex Audio e escolha "Fixar na barra de tarefas".'
+    : /Mac OS X|Macintosh/.test(ua)
+      ? 'O ícone do Lex Audio foi colocado no Dock. Para abrir depois, é só clicar nele.'
+      : 'O ícone do Lex Audio foi colocado nos Favoritos da barra. Se não aparecer, procure "Lex Audio" no menu de aplicativos e escolha "Adicionar aos favoritos".';
+  return (
+    <p className="mx-auto mt-4 max-w-md rounded-xl border border-emerald-500/20 bg-emerald-500/[0.06] p-3 text-left text-xs leading-relaxed text-zinc-600 dark:text-zinc-300">
+      <Pin className="mr-1 inline h-3.5 w-3.5 text-emerald-500" /> {text}
+    </p>
   );
 }
 

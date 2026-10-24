@@ -4,6 +4,9 @@
 - **Instaladores com assistente** (Avançar → Avançar → Concluir, e o app abre sozinho): `.exe` para Windows (sem senha
   de administrador, atalhos no menu Iniciar e na Área de Trabalho, desinstalador), `.pkg` para macOS e `.deb` para Linux.
   Os pacotes portáteis (.zip/.tar.gz) continuam disponíveis.
+- **Novo ícone:** ramo de oliveira com clave de fá.
+- **Ícone fixo na barra:** no Dock do macOS e nos Favoritos do Linux, automaticamente na primeira abertura; no Windows,
+  instruções para fixar na barra de tarefas no fim da instalação e no app.
 - **Assistente de primeiro uso** no app: boas-vindas, aceite dos Termos e da Política de Privacidade, download do modelo
   de IA com um clique e perfil.
 - **Perfil do usuário** (nova aba): nome, e-mail, telefone, profissão, registro profissional, CPF (com conferência),

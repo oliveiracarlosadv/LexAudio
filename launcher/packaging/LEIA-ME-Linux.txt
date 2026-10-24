@@ -12,3 +12,7 @@ COMO USAR
    Depois disso, tudo funciona sem internet.
 
 Fechar as abas do Lex Audio encerra o programa alguns minutos depois.
+
+BARRA (FAVORITOS)
+Depois de rodar ./instalar-atalho.sh, abra o Lex Audio uma vez: o ícone vai para
+os Favoritos da barra (GNOME/Ubuntu).

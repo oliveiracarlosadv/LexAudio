@@ -22,3 +22,7 @@ Código aberto em https://github.com/oliveiracarlosadv/LexAudio
 ENCERRAR
 Basta fechar as abas do Lex Audio. O programa se encerra sozinho
 alguns minutos depois. Seus áudios nunca saem do computador.
+
+DOCK
+Para manter o ícone no Dock: com o Lex Audio aberto, clique com o botão direito
+no ícone dele no Dock > Opções > Manter no Dock. O instalador .pkg faz isso sozinho.

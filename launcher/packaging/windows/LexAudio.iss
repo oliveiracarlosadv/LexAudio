@@ -47,7 +47,7 @@ Name: "brazilianportuguese"; MessagesFile: "compiler:Languages\BrazilianPortugue
 
 [Messages]
 brazilianportuguese.WelcomeLabel2=Este assistente vai instalar o Lex Audio {#AppVersion} no seu computador.%n%nTransforme áudio em texto. Totalmente offline: seus áudios nunca saem deste computador.%n%nClique em Avançar para continuar.
-brazilianportuguese.FinishedLabel=O Lex Audio foi instalado.%n%nNa primeira abertura, um assistente rápido ajuda a baixar o modelo de inteligência artificial (uma única vez). Depois disso, tudo funciona sem internet.
+brazilianportuguese.FinishedLabel=O Lex Audio foi instalado. Ele abre no seu navegador.%n%nPARA FIXAR NA BARRA DE TAREFAS: abra o menu Iniciar, clique com o botão direito em Lex Audio e escolha Fixar na barra de tarefas. (O Windows não permite que programas façam isso sozinhos.)%n%nNa primeira abertura, um assistente rápido ajuda a baixar o modelo de inteligência artificial (uma única vez).
 
 [Tasks]
 Name: "desktopicon"; Description: "Criar atalho na Área de Trabalho"; GroupDescription: "Atalhos:"

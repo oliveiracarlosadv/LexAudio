@@ -101,6 +101,7 @@ func main() {
 	go func() {
 		time.Sleep(300 * time.Millisecond)
 		openBrowser(url)
+		pinOnce() // fixa o ícone no Dock/barra na primeira abertura
 	}()
 
 	log.Printf("Lex Audio em %s (feche todas as abas para encerrar)", url)

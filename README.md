@@ -18,6 +18,9 @@
 3. Ao concluir, o Lex Audio abre sozinho no seu navegador e um assistente de primeiro uso ajuda a aceitar os termos,
    baixar o modelo de IA (uma única vez) e preencher seu perfil. Depois disso, tudo funciona sem internet.
 
+O ícone do Lex Audio fica fixo no **Dock** (macOS) e nos **Favoritos** (Linux) automaticamente. No Windows, que não permite
+isso a programas, clique com o botão direito em **Lex Audio** no menu Iniciar → **Fixar na barra de tarefas**.
+
 > Na primeira vez, Windows e macOS mostram um aviso porque o app ainda não tem assinatura digital paga.
 > *Windows:* **Mais informações → Executar assim mesmo**. *macOS:* **Ajustes do Sistema → Privacidade e Segurança → Abrir Mesmo Assim**.
 
