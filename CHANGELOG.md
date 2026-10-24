@@ -1,5 +1,9 @@
 # Histórico de versões
 
+## v1.3.1 — 24/10/2026
+- **Correção (macOS):** clicar no ícone do Dock depois de fechar a aba do Lex Audio não abria o app de novo (o programa
+  ainda estava rodando e o macOS só o "ativava"). Agora o ícone abre o app sempre; o servidor roda em segundo plano.
+
 ## v1.3.0 — 24/10/2026
 - **Instaladores com assistente** (Avançar → Avançar → Concluir, e o app abre sozinho): `.exe` para Windows (sem senha
   de administrador, atalhos no menu Iniciar e na Área de Trabalho, desinstalador), `.pkg` para macOS e `.deb` para Linux.

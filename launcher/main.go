@@ -43,8 +43,27 @@ var version = "dev"
 
 var lastSeen atomic.Int64
 
+// serverFlag marca o processo que serve o app (macOS: separado do processo do ícone).
+const serverFlag = "--servidor"
+
 func main() {
 	url := fmt.Sprintf("http://127.0.0.1:%d/", port)
+
+	// macOS: enquanto o processo aberto pelo ícone continua rodando, um novo clique no
+	// Dock só o "ativa" e nada acontece. Por isso o processo do ícone só abre o
+	// navegador (ou inicia o servidor em segundo plano) e se encerra na hora: cada
+	// clique vira uma abertura nova.
+	if runtime.GOOS == "darwin" && !hasArg(serverFlag) {
+		if runningVersion(url) == version {
+			openBrowser(url)
+			return
+		}
+		if err := startDetached(serverFlag); err != nil {
+			log.Printf("Não foi possível iniciar em segundo plano (%v); iniciando aqui.", err)
+		} else {
+			return
+		}
+	}
 
 	ln, err := listen()
 	if err != nil {
@@ -149,6 +168,29 @@ func watchdog() {
 			os.Exit(0)
 		}
 	}
+}
+
+func hasArg(a string) bool {
+	for _, x := range os.Args[1:] {
+		if x == a {
+			return true
+		}
+	}
+	return false
+}
+
+// startDetached inicia este mesmo programa em segundo plano, numa sessão própria.
+func startDetached(args ...string) error {
+	exe, err := os.Executable()
+	if err != nil {
+		return err
+	}
+	cmd := exec.Command(exe, args...)
+	detach(cmd)
+	if err := cmd.Start(); err != nil {
+		return err
+	}
+	return cmd.Process.Release()
 }
 
 func listen() (net.Listener, error) {
